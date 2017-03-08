@@ -34,57 +34,25 @@ bool InputManager::preUpdate()
 	bool ret = true;
 
 	//DOWN
-	//Code with down queues here
-	if (!App->input->down_queue.empty())
+	if (!App->input->down_button_queue.empty())
 	{
-		for (int i = 0; i < App->input->down_queue.size(); i++)
+		for (int i = 0; i < App->input->down_button_queue.size(); i++)
 		{
-			list<ShortCut*>::iterator it = shortcuts_list.begin();
-			while (it != shortcuts_list.end())
+			for (list<Action*>::iterator item = actions_list.begin(); item != actions_list.end(); item++)
 			{
-				if (App->input->down_queue.front() + i == (*it)->command && (*it)->type == DOWN)
-					(*it)->active = true;
-				++it;
-			}
-		}
-	}
-	//UP
-	//Code with up queues here
-	if (!App->input->up_queue.empty())
-	{
-		for (int i = 0; i < App->input->up_queue.size(); i++)
-		{
-			list<ShortCut*>::iterator it = shortcuts_list.begin();
-			while (it != shortcuts_list.end())
-			{
-				if (App->input->up_queue.front() + i == (*it)->command && (*it)->type == UP)
-					(*it)->active = false;
-				++it;
-			}
-		}
-	}
-	//REPEAT
-	//Code with repeat queues here
-	if (!App->input->repeat_queue.empty())
-	{
-		for (int i = 0; i < App->input->repeat_queue.size(); i++)
-		{
-			list<ShortCut*>::iterator it = shortcuts_list.begin();
-			while (it != shortcuts_list.end())
-			{
-				if (App->input->repeat_queue.front() + i == (*it)->command && (*it)->type == REPEAT)
-					(*it)->active = true;
-				++it;
+				if (App->input->down_button_queue.front() + i == (*item)->button && (*item)->type == DOWN)
+					(*item)->active = true;
 			}
 		}
 	}
 
+	
 	return ret;
 }
 
 bool InputManager::update(float dt)
 {
-	bool ret = true;
+	/*bool ret = true;
 
 	// Check for shortcut change
 	list<ShortCut*>::iterator it = shortcuts_list.begin();
@@ -119,7 +87,7 @@ bool InputManager::update(float dt)
 					{
 						(*it)->active = false;
 						++it;
-					}*/
+					}//
 				}
 				else
 				{
@@ -135,23 +103,19 @@ bool InputManager::update(float dt)
 		++it;
 	}
 
-	return ret;
+	return ret;*/
+
+	return true;
 }
 
 // Called after all Updates
 bool InputManager::postUpdate()
 {
-	bool ret = true;
 
-	list<ShortCut*>::iterator it = shortcuts_list.begin();
-
-	while (it != shortcuts_list.end())
-	{
+	for(list<Action*>::iterator it = actions_list.begin(); it != actions_list.end(); it++)
 		(*it)->active = false;
-		++it;
-	}
 
-	return ret;
+	return true;
 }
 
 // Called before quitting
@@ -159,34 +123,28 @@ bool InputManager::cleanUp()
 {
 	bool ret = true;
 
-	shortcuts_list.clear();
+	actions_list.clear();
 
 	return ret;
 }
 
-bool InputManager::CheckShortcut(ShortCutID id)
+bool InputManager::CheckAction(ACTIONID id)
 {
 	bool ret = false;
 
-	int i = 0;
-	std::list<ShortCut*>::iterator it = shortcuts_list.begin();
-
-	while (it != shortcuts_list.end())
+	for (std::list<Action*>::iterator it = actions_list.begin(); it != actions_list.end(); it++)
 	{
-		if (i == int(id))
+		if (id == (*it)->button)
 		{
 			ret = (*it)->active;
 			break;
 		}
-
-		i++;
-		it++;
 	}
 
 	return ret;
 }
 
-void InputManager::ChangeShortcutCommand(ShortCut* shortcut)
+/*void InputManager::ChangeShortcutCommand(ShortCut* shortcut)
 {
 	// manage input manager panel
 	/*shortcut->command_label->SetText(shortcut->command, app->font->smallFont);
@@ -194,7 +152,7 @@ void InputManager::ChangeShortcutCommand(ShortCut* shortcut)
 	iPoint posLabel = shortcut->command_label->getLocalPosition();
 	iPoint posDecor = shortcut->decor->getLocalPosition();
 	posLabel.x = posDecor.x + 63 - ((int(shortcut->command.size()) - 1) * 5);
-	shortcut->command_label->SetLocalPosition(posLabel);*/
+	shortcut->command_label->SetLocalPosition(posLabel);
 
 	shortcut->ready_to_change = false;
-}
+}*/

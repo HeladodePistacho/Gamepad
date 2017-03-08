@@ -9,6 +9,7 @@
 #include <list>
 #include <string>
 
+
 enum INPUT_TYPE
 {
 	DOWN,
@@ -16,51 +17,9 @@ enum INPUT_TYPE
 	REPEAT
 };
 
-struct ShortCut
-{
-	ShortCut() : active(false)
-	{}
-
-	ShortCut(INPUT_TYPE _type, string _name, string _command) : active(false)
-	{
-		type = _type;
-		name = _name;
-		command = _command;
-	}
-
-	INPUT_TYPE	 type;
-	bool		 active = false;
-	bool		 ready_to_change = false;
-	std::string		 name;
-	std::string		 command; // SDL_ScancodeName
-};
-
-enum ShortCutID
-{
-	A = 0,
-	B,
-	X,
-	Y,
-	RightTrigger,
-	LeftTrigger,
-	RightBumper,
-	LeftBumper
-};
-
-/*-Left stick : move link(8 directions)
-- Right Stick : orient link(4 directions).If in neutral position, Link will orient automatically with left stick.
-- Right Bumper : Attack in the current orientation if rapid touch, spin attack if hold an release.
-- Left Bumper : Dodge in the current orientation.If neutral, dodge backwards.
-- Right Trigger : Use equipped item.
-- Left Trigger : Change item.
-- A : Interact(pick objects, talk), acept in menu.
-- B : Cancel in menu.
-- Y : Open map.
-- Start : Open pause menu.*/
-
 struct Action
 {
-	Action(INPUT_TYPE new_type, string new_name, int new_button) : type(new_type), name(new_name), button(new_button) {}
+	Action(INPUT_TYPE new_type, string new_name, SDL_GameControllerButton new_button) : type(new_type), name(new_name), button(new_button) {}
 
 	bool			active = false;
 	bool			ready_to_change = false;
@@ -70,6 +29,17 @@ struct Action
 	int				button;
 
 };
+
+enum ACTIONID
+{
+	A = 0,
+	B,
+	DUP = 11,
+	DDOWN,
+	DLEFT,
+	DRIGHT,
+};
+
 
 
 class InputManager: public j1Module
@@ -95,16 +65,17 @@ public:
 	// Called before quitting
 	bool cleanUp();
 
-	//Shortcuts list
-	std::list<ShortCut*>	shortcuts_list;
+	//Action list
+	std::list<Action*>		actions_list;
 
 	//Check for shortcut state
-	bool CheckShortcut(ShortCutID id = A);
+	//bool CheckShortcut(ShortCutID id = A);
+	bool CheckAction(ACTIONID id);
 
 private:
 
 	//Refresh commands once have been changed
-	void ChangeShortcutCommand(ShortCut* shortcut);
+	//void ChangeShortcutCommand(ShortCut* shortcut);
 
 	//Shortcuts xml file path
 	std::string		inputs_file_path;
