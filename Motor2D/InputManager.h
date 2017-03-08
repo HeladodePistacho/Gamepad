@@ -58,6 +58,20 @@ enum ShortCutID
 - Y : Open map.
 - Start : Open pause menu.*/
 
+struct Action
+{
+	Action(INPUT_TYPE new_type, string new_name, int new_button) : type(new_type), name(new_name), button(new_button) {}
+
+	bool			active = false;
+	bool			ready_to_change = false;
+
+	INPUT_TYPE		type;
+	std::string		name;
+	int				button;
+
+};
+
+
 class InputManager: public j1Module
 {
 public:
