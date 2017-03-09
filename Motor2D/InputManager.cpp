@@ -108,7 +108,8 @@ bool InputManager::update(float dt)
 // Called after all Updates
 bool InputManager::PostUpdate()
 {
-
+	if(!current_action.empty())
+		current_action.clear();
 
 	return true;
 }
@@ -123,7 +124,7 @@ bool InputManager::CleanUp()
 	return ret;
 }
 
-void InputManager::InputEvent(int button, EVENTSTATE state)
+void InputManager::InputDetected(int button, EVENTSTATE state)
 {
 
 	multimap<int, INPUTEVENT>::iterator tmp = actions.find(button);
@@ -135,6 +136,16 @@ void InputManager::InputEvent(int button, EVENTSTATE state)
 		new_current_action.second = state;
 		current_action.insert(new_current_action);
 	}
+}
+
+EVENTSTATE InputManager::EventPressed(INPUTEVENT action)
+{
+	multimap<INPUTEVENT, EVENTSTATE>::iterator tmp = current_action.find(action);
+
+	if (tmp != current_action.end())
+		return tmp->second;
+
+	return E_NOTHING;
 }
 
 

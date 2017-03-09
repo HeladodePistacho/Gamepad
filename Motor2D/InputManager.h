@@ -21,6 +21,7 @@ enum INPUTEVENT
 
 enum EVENTSTATE
 {
+	E_NOTHING,
 	E_DOWN,
 	E_UP,
 	E_REPEAT
@@ -50,7 +51,10 @@ public:
 	bool CleanUp();
 
 	//When detected input
-	void InputEvent(int button, EVENTSTATE state);
+	void InputDetected(int, EVENTSTATE);
+
+	//For Polling
+	EVENTSTATE EventPressed(INPUTEVENT);
 
 private:
 
