@@ -123,17 +123,19 @@ bool InputManager::CleanUp()
 	return ret;
 }
 
-
-
-/*void InputManager::ChangeShortcutCommand(ShortCut* shortcut)
+void InputManager::InputEvent(int button, EVENTSTATE state)
 {
-	// manage input manager panel
-	/*shortcut->command_label->SetText(shortcut->command, app->font->smallFont);
 
-	iPoint posLabel = shortcut->command_label->getLocalPosition();
-	iPoint posDecor = shortcut->decor->getLocalPosition();
-	posLabel.x = posDecor.x + 63 - ((int(shortcut->command.size()) - 1) * 5);
-	shortcut->command_label->SetLocalPosition(posLabel);
+	multimap<int, INPUTEVENT>::iterator tmp = actions.find(button);
+	//If more than one action per button we must iterate until the end
+	if (tmp != actions.end())
+	{
+		std::pair<INPUTEVENT, EVENTSTATE> new_current_action;
+		new_current_action.first = (*tmp).second;
+		new_current_action.second = state;
+		current_action.insert(new_current_action);
+	}
+}
 
-	shortcut->ready_to_change = false;
-}*/
+
+

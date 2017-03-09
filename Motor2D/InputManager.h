@@ -10,9 +10,6 @@
 #include <string>
 #include <map>
 
-
-
-
 enum INPUTEVENT
 {
 	ATTACK = 0,
@@ -28,20 +25,6 @@ enum EVENTSTATE
 	E_UP,
 	E_REPEAT
 };
-
-/*
-struct Action
-{
-	Action(INPUT_TYPE new_type, ACTIONID new_id, int new_button) : type(new_type), id(new_id), button(new_button) {}
-
-	bool			active = false;
-	bool			ready_to_change = false;
-
-	INPUT_TYPE		type;
-	ACTIONID		id;
-	int				button;
-
-};*/
 
 class InputManager: public j1Module
 {
@@ -65,23 +48,13 @@ public:
 
 	// Called before quitting
 	bool CleanUp();
-/*
-	//Action list
-	std::list<Action*>		actions_list;
 
-	//Check for shortcut state
-	bool CheckAction(ACTIONID id = NO_ACTION);
+	//When detected input
+	void InputEvent(int button, EVENTSTATE state);
 
-	Action* AddAction(INPUT_TYPE, ACTIONID, int);
-	*/
 private:
 
-	//Refresh commands once have been changed
-	//void ChangeShortcutCommand(ShortCut* shortcut);
-
-	//INPUT_TYPE GetType(string);
-
-
+	
 	//Mapping is fun
 	//All the actions possible int->button, Action->attack, moveup...
 	std::multimap<int, INPUTEVENT> actions;
