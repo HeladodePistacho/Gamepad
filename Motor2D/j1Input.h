@@ -2,6 +2,7 @@
 #define __j1INPUT_H__
 
 #include "j1Module.h"
+#include "j1Timer.h"
 #include "SDL\include\SDL_gamecontroller.h"
 #include <queue>
 
@@ -48,6 +49,7 @@ public:
 	// Called each loop iteration
 	bool PreUpdate();
 
+	bool PostUpdate();
 	// Called before quitting
 	bool CleanUp();
 
@@ -82,6 +84,9 @@ public:
 	std::queue<const char*>		up_queue;
 	std::queue<const char*>		repeat_queue;
 
+	//std::queue<SDL_GameControllerButton>	down_queue1;
+	std::queue<int>	down_button_queue;
+
 private:
 	bool		windowEvents[WE_COUNT];
 	j1KeyState*	keyboard;
@@ -98,7 +103,7 @@ private:
 	SDL_Joystick*		joystick = nullptr;
 
 	
-	
+	j1Timer		clean_buttons;
 
 };
 
