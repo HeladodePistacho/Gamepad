@@ -18,33 +18,30 @@ InputManager::~InputManager()
 {}
 
 // Called when before render is available
-bool InputManager::awake(pugi::xml_node& conf)
+bool InputManager::Awake(pugi::xml_node& conf)
 {
 	bool ret = true;
 
-	//Loading shortcuts path xml
-	inputs_file_path = conf.child("shortcuts_path").attribute("value").as_string();
+	//Load All actions
+	for (pugi::xml_node tmp = conf.child("action"); tmp != nullptr; tmp = tmp.next_sibling())
+	{
+		std::pair<int, INPUTEVENT> new_action;
+		new_action.first = tmp.attribute("button").as_int();
+		new_action.second = (INPUTEVENT)tmp.attribute("event").as_int();
 
+		actions.insert(new_action);
+	}
+
+ 	
 	return ret;
 }
 
 // Called before all Updates
-bool InputManager::preUpdate()
+bool InputManager::PreUpdate()
 {
 	bool ret = true;
 
-	//DOWN
-	if (!App->input->down_button_queue.empty())
-	{
-		for (int i = 0; i < App->input->down_button_queue.size(); i++)
-		{
-			for (list<Action*>::iterator item = actions_list.begin(); item != actions_list.end(); item++)
-			{
-				if (App->input->down_button_queue.front() + i == (*item)->button && (*item)->type == DOWN)
-					(*item)->active = true;
-			}
-		}
-	}
+	
 
 	
 	return ret;
@@ -109,40 +106,24 @@ bool InputManager::update(float dt)
 }
 
 // Called after all Updates
-bool InputManager::postUpdate()
+bool InputManager::PostUpdate()
 {
 
-	for(list<Action*>::iterator it = actions_list.begin(); it != actions_list.end(); it++)
-		(*it)->active = false;
 
 	return true;
 }
 
 // Called before quitting
-bool InputManager::cleanUp()
+bool InputManager::CleanUp()
 {
 	bool ret = true;
 
-	actions_list.clear();
+	
 
 	return ret;
 }
 
-bool InputManager::CheckAction(ACTIONID id)
-{
-	bool ret = false;
 
-	for (std::list<Action*>::iterator it = actions_list.begin(); it != actions_list.end(); it++)
-	{
-		if (id == (*it)->button)
-		{
-			ret = (*it)->active;
-			break;
-		}
-	}
-
-	return ret;
-}
 
 /*void InputManager::ChangeShortcutCommand(ShortCut* shortcut)
 {

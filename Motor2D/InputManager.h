@@ -8,39 +8,40 @@
 #include "PugiXml\src\pugixml.hpp"
 #include <list>
 #include <string>
+#include <map>
 
 
-enum INPUT_TYPE
+
+
+enum INPUTEVENT
 {
-	DOWN,
-	UP,
-	REPEAT
+	ATTACK = 0,
+	MUP,
+	MDOWN,
+	MLEFT,
+	MRIGHT,
 };
 
+enum EVENTSTATE
+{
+	E_DOWN,
+	E_UP,
+	E_REPEAT
+};
+
+/*
 struct Action
 {
-	Action(INPUT_TYPE new_type, string new_name, SDL_GameControllerButton new_button) : type(new_type), name(new_name), button(new_button) {}
+	Action(INPUT_TYPE new_type, ACTIONID new_id, int new_button) : type(new_type), id(new_id), button(new_button) {}
 
 	bool			active = false;
 	bool			ready_to_change = false;
 
 	INPUT_TYPE		type;
-	std::string		name;
+	ACTIONID		id;
 	int				button;
 
-};
-
-enum ACTIONID
-{
-	A = 0,
-	B,
-	DUP = 11,
-	DDOWN,
-	DLEFT,
-	DRIGHT,
-};
-
-
+};*/
 
 class InputManager: public j1Module
 {
@@ -52,33 +53,41 @@ public:
 	virtual ~InputManager();
 
 	// Called when before render is available
-	bool awake(pugi::xml_node&);
+	bool Awake(pugi::xml_node&);
 
 	// Called before all Updates
-	bool preUpdate();
+	bool PreUpdate();
 
 	bool update(float dt);
 
 	// Called after all Updates
-	bool postUpdate();
+	bool PostUpdate();
 
 	// Called before quitting
-	bool cleanUp();
-
+	bool CleanUp();
+/*
 	//Action list
 	std::list<Action*>		actions_list;
 
 	//Check for shortcut state
-	//bool CheckShortcut(ShortCutID id = A);
-	bool CheckAction(ACTIONID id);
+	bool CheckAction(ACTIONID id = NO_ACTION);
 
+	Action* AddAction(INPUT_TYPE, ACTIONID, int);
+	*/
 private:
 
 	//Refresh commands once have been changed
 	//void ChangeShortcutCommand(ShortCut* shortcut);
 
-	//Shortcuts xml file path
-	std::string		inputs_file_path;
+	//INPUT_TYPE GetType(string);
+
+
+	//Mapping is fun
+	//All the actions possible int->button, Action->attack, moveup...
+	std::multimap<int, INPUTEVENT> actions;
+
+	//All the actions in this frame
+	std::multimap<INPUTEVENT, EVENTSTATE> current_action;
 };
 
 #endif // __INPUT_MANAGER_H__
