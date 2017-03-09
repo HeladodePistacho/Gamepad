@@ -40,67 +40,19 @@ bool InputManager::Awake(pugi::xml_node& conf)
 bool InputManager::PreUpdate()
 {
 	bool ret = true;
-
-	
-
-	
 	return ret;
 }
 
-bool InputManager::update(float dt)
+bool InputManager::Update(float dt)
 {
-	/*bool ret = true;
-
-	// Check for shortcut change
-	list<ShortCut*>::iterator it = shortcuts_list.begin();
-	while (it != shortcuts_list.end())
+	if (EventPressed(ATTACK) == KEY_DOWN)
 	{
-		if ((*it)->ready_to_change)
-		{
-			static SDL_Event event;
+		static SDL_Event event;
 
-			// COMPLETELY STOPS THE GAME...
-			SDL_WaitEvent(&event);
-
-			if (event.type == SDL_KEYDOWN)
-			{
-				std::string code = SDL_GetScancodeName(event.key.keysym.scancode);
-
-				bool keyAlreadyAssigned = false;
-
-				list<ShortCut*>::iterator it2 = shortcuts_list.begin();
-				for (;it2 != shortcuts_list.end() && !keyAlreadyAssigned; it2++)
-				{
-					keyAlreadyAssigned = (strcmp((*it2)->command.c_str(), code.c_str()) == 0);
-				}
-
-				if (!keyAlreadyAssigned)
-				{
-					(*it)->command = code;
-					ChangeShortcutCommand((*it));
-
-					/*list<ShortCut*>::iterator it = shortcuts_list.begin();
-					while (it != shortcuts_list.end())
-					{
-						(*it)->active = false;
-						++it;
-					}//
-				}
-				else
-				{
-					LOG("Key already assigned");
-				}
-			}
-
-			(*it)->ready_to_change = false;
-
-			return ret;
-		}
-
-		++it;
+		//Stop the game until new input event
+		SDL_WaitEvent(&event);
+	//	ChangeEventButton(INPUTEVENT::MRIGHT);
 	}
-
-	return ret;*/
 
 	return true;
 }
@@ -138,9 +90,38 @@ void InputManager::InputDetected(int button, EVENTSTATE state)
 	}
 }
 
-EVENTSTATE InputManager::EventPressed(INPUTEVENT action)
+bool InputManager::ChangeEventButton(INPUTEVENT event_to_change)
 {
-	multimap<INPUTEVENT, EVENTSTATE>::iterator tmp = current_action.find(action);
+	bool ret = false;
+	static SDL_Event event;
+
+	//Stop the game until new input event
+	SDL_WaitEvent(&event);
+
+	if (event.type == SDL_CONTROLLERBUTTONDOWN)
+	{
+		//Look if the new button is actually asigned
+		multimap<int, INPUTEVENT>::iterator tmp = actions.find(event.cbutton.button);
+
+		if (tmp != actions.end())
+		{
+			LOG("This button is actually in another action");
+			return ret;
+		}
+		std::pair<int, INPUTEVENT> event_changed;
+		event_changed = *tmp;
+		actions.erase(tmp);
+
+		actions.insert(event_changed);
+		ret = true;
+	}
+
+	return ret;
+}
+
+EVENTSTATE InputManager::EventPressed(INPUTEVENT action) const
+{
+	multimap<INPUTEVENT, EVENTSTATE>::const_iterator tmp = current_action.find(action);
 
 	if (tmp != current_action.end())
 		return tmp->second;

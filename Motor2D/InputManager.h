@@ -42,7 +42,7 @@ public:
 	// Called before all Updates
 	bool PreUpdate();
 
-	bool update(float dt);
+	bool Update(float dt);
 
 	// Called after all Updates
 	bool PostUpdate();
@@ -53,14 +53,17 @@ public:
 	//When detected input
 	void InputDetected(int, EVENTSTATE);
 
+	//To Change the action button
+	bool ChangeEventButton(INPUTEVENT);
+
 	//For Polling
-	EVENTSTATE EventPressed(INPUTEVENT);
+	EVENTSTATE EventPressed(INPUTEVENT) const;
 
 private:
 
 	
 	//Mapping is fun
-	//All the actions possible int->button, Action->attack, moveup...
+	//All the actions possible int->button, INPUTEVENT->attack, moveup...
 	std::multimap<int, INPUTEVENT> actions;
 
 	//All the actions in this frame
