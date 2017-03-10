@@ -67,7 +67,7 @@ bool j1Input::Start()
 
 	}
 
-	//int i =  SDL_GameControllerAddMapping("00000000000000000000000000000000,X360 Controller,a:b0,b:b11,back:b5,dpdown:b1,dpleft:b2,dpright:b3,dpup:b10,guide:b14,leftshoulder:b8,leftstick:b6,lefttrigger:a4,leftx:a0,lefty:a1,rightshoulder:b9,rightstick:b7,righttrigger:a5,rightx:a2,righty:a3,start:b4,x:b12,y:b13,");
+	int i =  SDL_GameControllerAddMapping("00000000000000000000000000000000,X360 Controller,a:b10,b:b11,back:b5,dpdown:b1,dpleft:b2,dpright:b3,dpup:b0,guide:b14,leftshoulder:b8,leftstick:b6,lefttrigger:a4,leftx:a0,lefty:a1,rightshoulder:b9,rightstick:b7,righttrigger:a5,rightx:a2,righty:a3,start:b4,x:b12,y:b13,");
 
 	
 	SDL_StopTextInput();
@@ -216,10 +216,22 @@ bool j1Input::PreUpdate()
 				
 				break;
 	
-			case SDL_CONTROLLERAXISMOTION:
+			case SDL_JOYAXISMOTION:
 
-				//if(event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
-					//LOG(" %i", event.caxis.value);
+				if (event.jaxis.axis == 0)
+				{
+					if (event.jaxis.value < -DEAD_ZONE)
+						LOG("-1");
+					else
+					{
+						if (event.jaxis.value > DEAD_ZONE)
+							LOG("1");
+					}
+				}
+					//LOG(" %i", event.jaxis.value);
+
+			
+
 				break;
 
 			case SDL_CONTROLLERBUTTONDOWN:
@@ -234,6 +246,7 @@ bool j1Input::PreUpdate()
 				App->inputM->InputDetected(event.cbutton.button, EVENTSTATE::E_UP);
 				break;
 
+	
 			case SDL_CONTROLLERDEVICEADDED:
 				
 				if (SDL_IsGameController(event.cdevice.which))
