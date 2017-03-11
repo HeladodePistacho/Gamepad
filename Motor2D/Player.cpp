@@ -32,6 +32,8 @@ bool Player::Start()
 		player_state = IDLE;
 	}
 
+	App->inputM->AddListener(this);
+
 	return ret;
 }
 
@@ -272,6 +274,18 @@ bool Player::Walking(float dt)
 	Change_direction();
 
 	return false;
+}
+
+void Player::OnInputCallback(INPUTEVENT action, EVENTSTATE state)
+{
+	switch (action)
+	{
+	case JUMP:
+
+		if (state == E_DOWN)
+			worldPosition.y += 20;	
+		break;
+	}
 }
 
 

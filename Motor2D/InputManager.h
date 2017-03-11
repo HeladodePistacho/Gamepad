@@ -12,7 +12,7 @@
 
 enum INPUTEVENT
 {
-	ATTACK = 0,
+	JUMP = 0,
 	MUP,
 	MDOWN,
 	MLEFT,
@@ -25,6 +25,14 @@ enum EVENTSTATE
 	E_DOWN,
 	E_UP,
 	E_REPEAT
+};
+
+class InputListener
+{
+public:
+	InputListener() : input_active(false) {}
+	bool input_active;
+	virtual void OnInputCallback(INPUTEVENT, EVENTSTATE) {};
 };
 
 class InputManager: public j1Module
@@ -59,6 +67,10 @@ public:
 	//For Polling
 	EVENTSTATE EventPressed(INPUTEVENT) const;
 
+	//For Callback system
+	void AddListener(InputListener*);
+	void CallListeners();
+
 private:
 
 	
@@ -68,6 +80,8 @@ private:
 
 	//All the actions in this frame
 	std::multimap<INPUTEVENT, EVENTSTATE> current_action;
+
+	std::list<InputListener*> listeners;
 };
 
 #endif // __INPUT_MANAGER_H__

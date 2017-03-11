@@ -46,7 +46,7 @@
   </entity_manager>
   
   <inputManager>
-    <!--Atack-->
+    <!--JUMP-->
     <action  button="0" event="0" />
     
     <!--Move UP-->

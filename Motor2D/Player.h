@@ -2,6 +2,7 @@
 #define _PLAYER_H_
 
 #include "Animation.h"
+#include "InputManager.h"
 #include <map>
 #include "PugiXml\src\pugixml.hpp"
 
@@ -21,7 +22,7 @@ enum DIRECTION
 	D_LEFT
 };
 
-class Player
+class Player : public InputListener
 {
 public:
 
@@ -63,6 +64,9 @@ private:
 	Animation* current_animation;
 	ACTION_STATE player_state = IDLE;
 	DIRECTION current_direction = D_DOWN;
+
+	bool moving = false;
+	void OnInputCallback(INPUTEVENT, EVENTSTATE);
 };
 
 #endif // !_PLAYER_H_

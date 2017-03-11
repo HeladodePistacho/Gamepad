@@ -45,14 +45,7 @@ bool InputManager::PreUpdate()
 
 bool InputManager::Update(float dt)
 {
-	if (EventPressed(ATTACK) == KEY_DOWN)
-	{
-		static SDL_Event event;
-
-		//Stop the game until new input event
-		SDL_WaitEvent(&event);
-	//	ChangeEventButton(INPUTEVENT::MRIGHT);
-	}
+	CallListeners();
 
 	return true;
 }
@@ -127,6 +120,37 @@ EVENTSTATE InputManager::EventPressed(INPUTEVENT action) const
 		return tmp->second;
 
 	return E_NOTHING;
+}
+
+void InputManager::AddListener(InputListener* new_listener)
+{
+	//To improve this: Search if the listener is actually in the list
+
+	if (new_listener)
+	{
+		new_listener->input_active = true;
+		listeners.push_back(new_listener);
+	}
+		
+}
+
+void InputManager::CallListeners()
+{
+	if (!current_action.empty())
+	{
+		for (list<InputListener*>::iterator it = listeners.begin(); it != listeners.end(); it++)
+		{	
+			if ((*it)->input_active)
+			{
+				std::multimap<INPUTEVENT, EVENTSTATE>::iterator frame_actions = current_action.begin();
+				while (frame_actions != current_action.end())
+				{
+					(*it)->OnInputCallback(frame_actions->first, frame_actions->second);
+					frame_actions++;
+				}
+			}
+		}
+	}
 }
 
 
