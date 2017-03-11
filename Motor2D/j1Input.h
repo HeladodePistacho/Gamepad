@@ -9,6 +9,7 @@
 //#define NUM_KEYS 352
 #define NUM_MOUSE_BUTTONS 5
 #define NUM_CONTROLLER_BUTTONS 15
+#define NUM_CONTROLLER_AXIS 6
 #define DEAD_ZONE 20000
 //#define LAST_KEYS_PRESSED_BUFFER 50
 
@@ -29,6 +30,13 @@ enum j1KeyState
 	KEY_DOWN,
 	KEY_REPEAT,
 	KEY_UP
+};
+
+enum j1JOYSTICKSTATE
+{
+	JNONE = 0,
+	POSITIVE = 1,
+	NEGATIVE = -1
 };
 
 class j1Input : public j1Module
@@ -92,7 +100,7 @@ private:
 	bool		windowEvents[WE_COUNT];
 	j1KeyState*	keyboard;
 	j1KeyState	mouse_buttons[NUM_MOUSE_BUTTONS];
-	j1KeyState	controller_buttons[NUM_CONTROLLER_BUTTONS];
+	
 	int			mouse_motion_x;
 	int			mouse_motion_y;
 	int			mouse_wheel;
@@ -106,6 +114,8 @@ private:
 	
 	j1Timer		clean_buttons;
 
+	j1KeyState		controller_buttons[NUM_CONTROLLER_BUTTONS];
+	j1JOYSTICKSTATE	controller_axis[NUM_CONTROLLER_AXIS];
 };
 
 #endif // __j1INPUT_H__

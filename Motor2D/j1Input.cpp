@@ -36,9 +36,9 @@ bool j1Input::Awake(pugi::xml_node& config)
 {
 	LOG("Init SDL input event system");
 	bool ret = true;
-	SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+	//SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
 
-	if(SDL_InitSubSystem(SDL_INIT_EVENTS) < 0)
+	if(SDL_InitSubSystem(SDL_INIT_EVENTS | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0)
 	{
 		LOG("SDL_EVENTS could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
@@ -55,10 +55,6 @@ bool j1Input::Start()
 	{
 		if (SDL_IsGameController(i))
 		{
-			/*joystick = SDL_JoystickOpen(i);
-
-			if (joystick == nullptr)
-				LOG("Gamepad not opened %s", SDL_GetError());*/
 			gamepad = SDL_GameControllerOpen(i);
 			if(gamepad == nullptr)
 				LOG("Gamepad not opened %s", SDL_GetError());
@@ -67,7 +63,7 @@ bool j1Input::Start()
 
 	}
 
-	int i =  SDL_GameControllerAddMapping("00000000000000000000000000000000,X360 Controller,a:b10,b:b11,back:b5,dpdown:b1,dpleft:b2,dpright:b3,dpup:b0,guide:b14,leftshoulder:b8,leftstick:b6,lefttrigger:a4,leftx:a0,lefty:a1,rightshoulder:b9,rightstick:b7,righttrigger:a5,rightx:a2,righty:a3,start:b4,x:b12,y:b13,");
+///	int i =  SDL_GameControllerAddMapping("00000000000000000000000000000000,X360 Controller,a:b10,b:b11,back:b5,dpdown:b1,dpleft:b2,dpright:b3,dpup:b0,guide:b14,leftshoulder:b8,leftstick:b6,lefttrigger:a4,leftx:a0,lefty:a1,rightshoulder:b9,rightstick:b7,righttrigger:a5,rightx:a2,righty:a3,start:b4,x:b12,y:b13,");
 
 	
 	SDL_StopTextInput();
@@ -216,22 +212,35 @@ bool j1Input::PreUpdate()
 				
 				break;
 	
-			case SDL_JOYAXISMOTION:
+		
+			case SDL_CONTROLLERAXISMOTION:
 
-				if (event.jaxis.axis == 0)
+				if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
 				{
-					if (event.jaxis.value < -DEAD_ZONE)
-						LOG("-1");
+					if (event.caxis.value < -DEAD_ZONE)
+						//controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::NEGATIVE;
+						LOG("%i", event.caxis.value);
 					else
 					{
-						if (event.jaxis.value > DEAD_ZONE)
-							LOG("1");
+						if (event.caxis.value > DEAD_ZONE)
+							//controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::POSITIVE;
+							LOG("%i", event.caxis.value);
+						else LOG("%i", event.caxis.value);//controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::NONE;
+					}
+
+				}
+				if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
+				{
+					if (event.caxis.value < -DEAD_ZONE)
+						controller_axis[SDL_CONTROLLER_AXIS_LEFTY] = j1JOYSTICKSTATE::POSITIVE;
+					else
+					{
+						if (event.caxis.value > DEAD_ZONE)
+							controller_axis[SDL_CONTROLLER_AXIS_LEFTY] = j1JOYSTICKSTATE::NEGATIVE;
+						else controller_axis[SDL_CONTROLLER_AXIS_LEFTY] = j1JOYSTICKSTATE::JNONE;
 					}
 				}
-					//LOG(" %i", event.jaxis.value);
-
-			
-
+				
 				break;
 
 			case SDL_CONTROLLERBUTTONDOWN:
@@ -253,6 +262,11 @@ bool j1Input::PreUpdate()
 					gamepad = SDL_GameControllerOpen(event.cdevice.which);
 
 				break;
+
+			case SDL_CONTROLLERDEVICEREMOVED:
+				if (gamepad)
+					SDL_GameControllerClose(gamepad);
+				break;
 		}
 	}
 
@@ -270,9 +284,8 @@ bool j1Input::CleanUp()
 {
 	LOG("Quitting SDL event subsystem");
 
-	SDL_GameControllerClose(gamepad);
-
-	SDL_QuitSubSystem(SDL_INIT_EVENTS);
+	
+	SDL_QuitSubSystem(SDL_INIT_EVENTS |SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
 	return true;
 }
 
