@@ -12,11 +12,13 @@
 
 enum INPUTEVENT
 {
+	NO_EVENT = -1,
 	JUMP = 0,
 	MUP,
 	MDOWN,
 	MLEFT,
 	MRIGHT,
+	PAUSE,
 };
 
 enum EVENTSTATE
@@ -62,7 +64,8 @@ public:
 	void InputDetected(int, EVENTSTATE);
 
 	//To Change the action button
-	bool ChangeEventButton(INPUTEVENT);
+	void ChangeInputEvent(INPUTEVENT);
+	
 
 	//For Polling
 	EVENTSTATE EventPressed(INPUTEVENT) const;
@@ -81,7 +84,15 @@ private:
 	//All the actions in this frame
 	std::multimap<INPUTEVENT, EVENTSTATE> current_action;
 
+	//All listeners for the callbacks
 	std::list<InputListener*> listeners;
+
+	//To Change the action button
+	bool		next_input_change = false;
+	bool		ChangeEventButton(int);
+	INPUTEVENT	event_to_change = NO_EVENT;
+
+
 };
 
 #endif // __INPUT_MANAGER_H__

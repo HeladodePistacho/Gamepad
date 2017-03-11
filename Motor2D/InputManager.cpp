@@ -47,6 +47,12 @@ bool InputManager::Update(float dt)
 {
 	CallListeners();
 
+	if (EventPressed(PAUSE) == E_DOWN)
+	{
+		ChangeInputEvent(MUP);
+	}
+
+
 	return true;
 }
 
@@ -71,43 +77,61 @@ bool InputManager::CleanUp()
 
 void InputManager::InputDetected(int button, EVENTSTATE state)
 {
-
-	multimap<int, INPUTEVENT>::iterator tmp = actions.find(button);
-	//If more than one action per button we must iterate until the end
-	if (tmp != actions.end())
+	if (next_input_change == false)
 	{
-		std::pair<INPUTEVENT, EVENTSTATE> new_current_action;
-		new_current_action.first = (*tmp).second;
-		new_current_action.second = state;
-		current_action.insert(new_current_action);
+		multimap<int, INPUTEVENT>::iterator tmp = actions.find(button);
+		//If more than one action per button we must iterate until the end
+		if (tmp != actions.end())
+		{
+			std::pair<INPUTEVENT, EVENTSTATE> new_current_action;
+			new_current_action.first = (*tmp).second;
+			new_current_action.second = state;
+			current_action.insert(new_current_action);
+		}
+	}
+	else
+	{
+		ChangeEventButton(button);
 	}
 }
 
-bool InputManager::ChangeEventButton(INPUTEVENT event_to_change)
+void InputManager::ChangeInputEvent(INPUTEVENT change_ev)
 {
-	bool ret = false;
-	static SDL_Event event;
+	next_input_change = true;
+	event_to_change = change_ev;
+}
 
-	//Stop the game until new input event
-	SDL_WaitEvent(&event);
+bool InputManager::ChangeEventButton(int new_button)
+{
+		bool ret = false;
 
-	if (event.type == SDL_CONTROLLERBUTTONDOWN)
-	{
 		//Look if the new button is actually asigned
-		multimap<int, INPUTEVENT>::iterator tmp = actions.find(event.cbutton.button);
+		multimap<int, INPUTEVENT>::iterator tmp = actions.find(new_button);
 
 		if (tmp != actions.end())
 		{
 			LOG("This button is actually in another action");
 			return ret;
 		}
-		std::pair<int, INPUTEVENT> event_changed;
-		event_changed = *tmp;
+		
+		//Look for the event to erase it
+		tmp = actions.begin();
+		while ((*tmp).second != event_to_change)
+			tmp++;
 		actions.erase(tmp);
 
+		//This is the event with the new button
+		std::pair<int, INPUTEVENT> event_changed;
+		event_changed.first = new_button;
+		event_changed.second = event_to_change;
 		actions.insert(event_changed);
+
+		//Reset the variables
+		next_input_change = false;
+		event_to_change = NO_EVENT;
+
 		ret = true;
-	}
+	
 
 	return ret;
 }

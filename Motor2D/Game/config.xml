@@ -60,6 +60,9 @@
     
     <!--Move RIGHT-->
     <action  button="14" event="4" />
+
+    <!--PAUSE-->
+    <action  button="6"  event="5" />
       
 
   </inputManager>
