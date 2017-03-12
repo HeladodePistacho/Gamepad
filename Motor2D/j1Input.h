@@ -32,12 +32,6 @@ enum j1KeyState
 	KEY_UP
 };
 
-enum j1JOYSTICKSTATE
-{
-	JNONE = 0,
-	POSITIVE = 1,
-	NEGATIVE = -1
-};
 
 class j1Input : public j1Module
 {
@@ -84,18 +78,6 @@ public:
 	void GetMouseMotion(int& x, int& y);
 	void GetMouseWheel(int& y);
 
-	bool joy = false;
-	int joystick_x, joystick_y;
-
-public:
-
-	std::queue<const char*>		down_queue;
-	std::queue<const char*>		up_queue;
-	std::queue<const char*>		repeat_queue;
-
-	//std::queue<SDL_GameControllerButton>	down_queue1;
-	std::queue<int>	down_button_queue;
-
 private:
 	bool		windowEvents[WE_COUNT];
 	j1KeyState*	keyboard;
@@ -115,7 +97,6 @@ private:
 	j1Timer		clean_buttons;
 
 	j1KeyState		controller_buttons[NUM_CONTROLLER_BUTTONS];
-	j1JOYSTICKSTATE	controller_axis[NUM_CONTROLLER_AXIS];
 };
 
 #endif // __j1INPUT_H__

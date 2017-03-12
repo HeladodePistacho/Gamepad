@@ -55,17 +55,19 @@ bool Player::Update(float dt)
 {
 	bool ret = true;
 
-	switch (player_state)
+	if (App->inputM->EventPressed(INPUTEVENT::MUP) == EVENTSTATE::E_REPEAT)
 	{
-		case(IDLE):
-			Idle();
-			break;
-
-		case(WALKING):
-			Walking(dt);
-			break;
+		current_direction = D_UP;
+		worldPosition.y -= SDL_ceil(10 * dt);
+		moving = true;
 	}
 	
+	if (App->inputM->EventPressed(INPUTEVENT::MDOWN) == EVENTSTATE::E_REPEAT)
+	{
+		current_direction = D_DOWN;
+		worldPosition.y += SDL_ceil(10 * dt);
+		moving = true;
+	}
 	
 	return ret;
 }
@@ -179,101 +181,6 @@ void Player::Change_direction()
 		current_direction = D_RIGHT;
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 		current_direction = D_LEFT;
-}
-
-bool Player::Idle()
-{
-	Change_direction();
-
-	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN)
-	{
-		player_state = WALKING;
-		LOG("Link is WALKING");
-		return true;
-	}
-
-	if (App->inputM->EventPressed(INPUTEVENT::MUP) || App->inputM->EventPressed(INPUTEVENT::MDOWN) || App->inputM->EventPressed(INPUTEVENT::MLEFT) || App->inputM->EventPressed(INPUTEVENT::MRIGHT))
-	{
-		player_state = WALKING;
-		return true;
-	}
-	
-	return false;
-}
-
-bool Player::Walking(float dt)
-{
-	bool moving = false;
-	
-	/*if (App->inputM->CheckAction(ACTIONID::MDOWN) || App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
-	{
-		current_direction = D_DOWN;
-		worldPosition.y += SDL_ceil(10 * dt);
-		moving = true;
-	}
-	
-	else if (App->inputM->CheckAction(ACTIONID::MUP) || App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
-	{
-		current_direction = D_UP;
-		worldPosition.y -= SDL_ceil(10 * dt);
-		moving = true;
-	}
-	
-	if (App->inputM->CheckAction(ACTIONID::MLEFT) || App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-	{
-		current_direction = D_LEFT;
-		worldPosition.x -= SDL_ceil(10 * dt);
-		moving = true;
-
-	}
-	else if ( App->inputM->CheckAction(ACTIONID::MRIGHT) || App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-	{
-		current_direction = D_RIGHT;
-		worldPosition.x += SDL_ceil(10 * dt);
-		moving = true;
-
-	}
-	*/
-
-	if (App->inputM->EventPressed(INPUTEVENT::MUP) == EVENTSTATE::E_REPEAT)
-	{
-		current_direction = D_UP;
-		worldPosition.y -= SDL_ceil(10 * dt);
-		moving = true;
-	}
-
-	if (App->inputM->EventPressed(INPUTEVENT::MDOWN) == EVENTSTATE::E_REPEAT)
-	{
-		current_direction = D_DOWN;
-		worldPosition.y += SDL_ceil(10 * dt);
-		moving = true;
-	}
-
-	if (App->inputM->EventPressed(INPUTEVENT::MLEFT) == EVENTSTATE::E_REPEAT)
-	{
-		current_direction = D_LEFT;
-		worldPosition.x -= SDL_ceil(10 * dt);
-		moving = true;
-	}
-
-	if (App->inputM->EventPressed(INPUTEVENT::MRIGHT) == EVENTSTATE::E_REPEAT)
-	{
-		current_direction = D_RIGHT;
-		worldPosition.x += SDL_ceil(10 * dt);
-		moving = true;
-	}
-
-
-	if(moving == false)
-	{
-		player_state = IDLE;
-		LOG("Link is in IDLE");
-		return true;
-	}
-
-	Change_direction();
-
-	return false;
 }
 
 void Player::OnInputCallback(INPUTEVENT action, EVENTSTATE state)

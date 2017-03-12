@@ -45,10 +45,7 @@ private:
 
 	void Change_direction();
 
-	//State Machine
-	bool Idle();
-	bool Walking(float dt);
-
+	
 
 private:
 

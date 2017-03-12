@@ -22,12 +22,13 @@ j1Input::j1Input() : j1Module()
 	keyboard = new j1KeyState[MAX_KEYS];
 	memset(keyboard, KEY_IDLE, sizeof(j1KeyState) * MAX_KEYS);
 	memset(mouse_buttons, KEY_IDLE, sizeof(j1KeyState) * NUM_MOUSE_BUTTONS);
-	memset(controller_buttons, KEY_IDLE, sizeof(j1KeyState) * NUM_CONTROLLER_BUTTONS);
 }
 
 // Destructor
 j1Input::~j1Input()
 {
+	
+
 	delete[] keyboard;
 }
 
@@ -118,34 +119,6 @@ bool j1Input::PreUpdate()
 			break;
 
 			
-			case SDL_CONTROLLERAXISMOTION:
-
-				if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
-				{
-					if (event.caxis.value < -DEAD_ZONE)
-						controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::NEGATIVE;
-					else
-					{
-						if (event.caxis.value > DEAD_ZONE)
-							controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::POSITIVE;							
-						else controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::JNONE;
-					}
-
-				}
-				if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTY)
-				{
-					if (event.caxis.value < -DEAD_ZONE)
-						controller_axis[SDL_CONTROLLER_AXIS_LEFTY] = j1JOYSTICKSTATE::POSITIVE;
-					else
-					{
-						if (event.caxis.value > DEAD_ZONE)
-							controller_axis[SDL_CONTROLLER_AXIS_LEFTY] = j1JOYSTICKSTATE::NEGATIVE;
-						else controller_axis[SDL_CONTROLLER_AXIS_LEFTY] = j1JOYSTICKSTATE::JNONE;
-					}
-				}
-				
-				break;
-
 			case SDL_CONTROLLERBUTTONDOWN:
 
 				LOG("BOTON: %i", event.cbutton.button);
@@ -187,7 +160,9 @@ bool j1Input::CleanUp()
 {
 	LOG("Quitting SDL event subsystem");
 
-	
+	if (gamepad)
+		SDL_GameControllerClose(gamepad);
+
 	SDL_QuitSubSystem(SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER);
 	return true;
 }
