@@ -63,7 +63,7 @@ bool j1Input::Start()
 
 	}
 
-///	int i =  SDL_GameControllerAddMapping("00000000000000000000000000000000,X360 Controller,a:b10,b:b11,back:b5,dpdown:b1,dpleft:b2,dpright:b3,dpup:b0,guide:b14,leftshoulder:b8,leftstick:b6,lefttrigger:a4,leftx:a0,lefty:a1,rightshoulder:b9,rightstick:b7,righttrigger:a5,rightx:a2,righty:a3,start:b4,x:b12,y:b13,");
+SDL_GameControllerAddMapping("00000000000000000000000000000000,X360 Controller,a:b10,b:b11,back:b5,dpdown:b1,dpleft:b2,dpright:b3,dpup:b0,guide:b14,leftshoulder:b8,leftstick:b6,lefttrigger:a4,leftx:a0,lefty:a1,rightshoulder:b9,rightstick:b7,righttrigger:a5,rightx:a2,righty:a3,start:b4,x:b12,y:b13,");
 
 	
 	SDL_StopTextInput();
@@ -74,51 +74,7 @@ bool j1Input::Start()
 bool j1Input::PreUpdate()
 {
 	
-
-	static SDL_Event event;
-	const Uint8* keys = SDL_GetKeyboardState(NULL);
-
-	for(int i = 0; i < MAX_KEYS; ++i)
-	{
-		//Translate key number to scancode enum
-		SDL_Scancode code = (SDL_Scancode)i;
-
-		if(keys[i] == 1)
-		{
-			if(keyboard[i] == KEY_IDLE)
-			{
-				keyboard[i] = KEY_DOWN;
-				down_queue.push(SDL_GetScancodeName(code));
-			}
-			else
-			{
-				keyboard[i] = KEY_REPEAT;
-				repeat_queue.push(SDL_GetScancodeName(code));
-			}
-		}
-		else
-		{
-			if (keyboard[i] == KEY_REPEAT || keyboard[i] == KEY_DOWN)
-			{
-				keyboard[i] = KEY_UP;
-				up_queue.push(SDL_GetScancodeName(code));
-			}
-
-			else
-			{
-				keyboard[i] = KEY_IDLE;
-			}
-		}
-	}
-
-	for(int i = 0; i < NUM_MOUSE_BUTTONS; ++i)
-	{
-		if(mouse_buttons[i] == KEY_DOWN)
-			mouse_buttons[i] = KEY_REPEAT;
-
-		if(mouse_buttons[i] == KEY_UP)
-			mouse_buttons[i] = KEY_IDLE;
-	}
+	static SDL_Event event;	
 
 	for (int i = 0; i < NUM_CONTROLLER_BUTTONS; ++i)
 	{
@@ -132,12 +88,6 @@ bool j1Input::PreUpdate()
 			controller_buttons[i] = KEY_IDLE;
 	}
 
-	
-	mouse_motion_x = 0;
-	mouse_motion_y = 0;
-	mouse_wheel = 0;
-	joystick_x = joystick_y = 0;
-	joy = false;
 
 	while(SDL_PollEvent(&event) != 0)
 	{
@@ -167,65 +117,18 @@ bool j1Input::PreUpdate()
 				}
 			break;
 
-			case SDL_MOUSEBUTTONDOWN:
-				mouse_buttons[event.button.button - 1] = KEY_DOWN;
-			break;
-
-			case SDL_MOUSEBUTTONUP:
-				mouse_buttons[event.button.button - 1] = KEY_UP;
-			break;
-
-			case SDL_MOUSEMOTION:
-			{
-				int scale = App->win->GetScale();
-				mouse_motion_x = event.motion.xrel / scale;
-				mouse_motion_y = event.motion.yrel / scale;
-				mouse_x = event.motion.x / scale;
-				mouse_y = event.motion.y / scale;
-
-				break;
-			}
-			case SDL_MOUSEWHEEL:
-				mouse_wheel = event.wheel.y * 10;
-				break;
-
-			case SDL_KEYDOWN:
-
-				if(event.key.keysym.scancode == SDL_SCANCODE_GRAVE)
-					App->console->Active_console();
-
-				break;
-		
-			case SDL_TEXTINPUT:
 			
-				//LOG("estoy escribiendo");
-				if (App->gui->element_selected && App->gui->element_selected->element_type == UI_TYPE::TEXT_BOX)
-				{
-						UI_Text_Box* temp = (UI_Text_Box*)App->gui->element_selected;
-						temp->Insert_Char(temp->cursor_virtual_pos, event.text.text);
-					
-						int width;
-						App->font->CalcSize(event.text.text, width, temp->height);
-						temp->cursor_virtual_pos++;
-						temp->cursor_pos += width;
-				}
-				
-				break;
-	
-		
 			case SDL_CONTROLLERAXISMOTION:
 
 				if (event.caxis.axis == SDL_CONTROLLER_AXIS_LEFTX)
 				{
 					if (event.caxis.value < -DEAD_ZONE)
-						//controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::NEGATIVE;
-						LOG("%i", event.caxis.value);
+						controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::NEGATIVE;
 					else
 					{
 						if (event.caxis.value > DEAD_ZONE)
-							//controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::POSITIVE;
-							LOG("%i", event.caxis.value);
-						else LOG("%i", event.caxis.value);//controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::NONE;
+							controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::POSITIVE;							
+						else controller_axis[SDL_CONTROLLER_AXIS_LEFTX] = j1JOYSTICKSTATE::JNONE;
 					}
 
 				}
@@ -285,7 +188,7 @@ bool j1Input::CleanUp()
 	LOG("Quitting SDL event subsystem");
 
 	
-	SDL_QuitSubSystem(SDL_INIT_EVENTS |SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+	SDL_QuitSubSystem(SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER);
 	return true;
 }
 
@@ -313,3 +216,7 @@ void j1Input::GetMouseWheel(int& y)
 {
 	y = mouse_wheel;
 }
+
+
+
+
